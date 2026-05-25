@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untuk Mezha</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            overflow: hidden; /* Mencegah scroll saat tombol kabur atau konfeti jatuh */
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            background-color: #ffdde1; /* Fallback warna pink pastel */
+            background-image: linear-gradient(315deg, #ffdde1 0%, #ee9ca7 74%);
+        }
+
+        /* Styling untuk Konfeti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f2d74e;
+            top: -10px;
+            z-index: 50;
+            border-radius: 50%;
+            animation: fall linear forwards;
+        }
+
+        /* Animasi jatuh konfeti */
+        @keyframes fall {
+            0% {
+                transform: translateY(-10px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Transisi pergerakan tombol kabur biar mulus */
+        #btn-no {
+            transition: top 0.2s ease, left 0.2s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center relative w-full h-full">
+
+    <!-- Kontainer Utama -->
+    <div id="main-card" class="bg-white/90 backdrop-blur-sm p-8 md:p-12 rounded-3xl shadow-2xl text-center max-w-sm w-[90%] z-10 transition-all duration-500 transform scale-100">
+        
+        <!-- Icon / Gambar Lucu (Opsional) -->
+        <div id="emoji-container" class="text-7xl mb-6 animate-bounce">
+            🥺
+        </div>
+
+        <!-- Teks Utama -->
+        <h1 id="main-text" class="text-2xl md:text-3xl font-extrabold text-gray-800 mb-8 leading-snug">
+            Halo Mezha, kamu mau maafin aku kan?
+        </h1>
+
+        <!-- Area Tombol -->
+        <div id="button-container" class="flex flex-col md:flex-row justify-center items-center gap-4 relative">
+            
+            <!-- Tombol Iya -->
+            <button id="btn-yes" class="w-full md:w-auto px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-full shadow-lg hover:shadow-pink-500/50 transition-all active:scale-95 text-lg">
+                Iya, dimaafin
+            </button>
+
+            <!-- Tombol Nggak (Dibuat relative lalu menjadi fixed saat kabur) -->
+            <button id="btn-no" class="w-full md:w-auto px-6 py-3 bg-gray-400 text-white font-bold rounded-full shadow border-2 border-gray-400 cursor-not-allowed text-lg">
+                Nggak mau!
+            </button>
+
+        </div>
+    </div>
+
+    <script>
+        const btnNo = document.getElementById('btn-no');
+        const btnYes = document.getElementById('btn-yes');
+        const mainText = document.getElementById('main-text');
+        const emojiContainer = document.getElementById('emoji-container');
+        const buttonContainer = document.getElementById('button-container');
+
+        let isButtonEscaping = false;
+
+        // Fungsi untuk membuat tombol "Nggak mau" kabur
+        function moveButton() {
+            // Ubah posisi jadi fixed agar bisa bergerak bebas di layar
+            btnNo.style.position = 'fixed';
+            
+            // Hitung ukuran layar dan ukuran tombol
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            const btnWidth = btnNo.offsetWidth;
+            const btnHeight = btnNo.offsetHeight;
+
+            // Generate posisi X dan Y acak (memastikan tombol tidak keluar batas layar)
+            const randomX = Math.max(10, Math.floor(Math.random() * (windowWidth - btnWidth - 20)));
+            const randomY = Math.max(10, Math.floor(Math.random() * (windowHeight - btnHeight - 20)));
+
+            // Terapkan posisi baru
+            btnNo.style.left = randomX + 'px';
+            btnNo.style.top = randomY + 'px';
+        }
+
+        // Trigger kabur saat dihover (untuk laptop/PC) atau saat disentuh (HP)
+        btnNo.addEventListener('mouseenter', moveButton);
+        btnNo.addEventListener('touchstart', function(e) {
+            e.preventDefault(); // Mencegah klik ter-register saat disentuh
+            moveButton();
+        }, { passive: false });
+
+
+        // Fungsi untuk membuat Konfeti
+        function fireConfetti() {
+            const colors = ['#f472b6', '#60a5fa', '#a78bfa', '#fcd34d', '#34d399', '#ef4444'];
+            
+            // Buat 100 keping konfeti
+            for(let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                
+                // Posisi X acak dari kiri ke kanan (0-100vw)
+                confetti.style.left = Math.random() * 100 + 'vw';
+                
+                // Warna acak
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Bentuk acak (lingkaran atau persegi)
+                if (Math.random() > 0.5) confetti.style.borderRadius = '0px';
+                
+                // Ukuran acak
+                const size = Math.random() * 8 + 5; // 5px sampai 13px
+                confetti.style.width = size + 'px';
+                confetti.style.height = size + 'px';
+                
+                // Durasi animasi dan jeda acak
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's'; // 2s - 5s
+                confetti.style.animationDelay = (Math.random() * 2) + 's';
+                
+                document.body.appendChild(confetti);
+
+                // Hapus elemen setelah animasi selesai agar tidak memenuhi memori
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+
+        // Aksi ketika tombol "Iya, dimaafin" diklik
+        btnYes.addEventListener('click', () => {
+            // Ganti teks
+            mainText.innerHTML = "Asyik, makasih ya! ❤️<br><span class='text-lg font-normal text-pink-500'>Kamu memang yang terbaik!</span>";
+            
+            // Ganti Emoji
+            emojiContainer.innerHTML = "🥰";
+            emojiContainer.classList.remove('animate-bounce');
+            emojiContainer.classList.add('animate-pulse');
+
+            // Sembunyikan tombol
+            buttonContainer.style.display = 'none';
+
+            // Jika tombol 'No' terlanjur fixed, sembunyikan juga
+            btnNo.style.display = 'none'; 
+
+            // Munculkan konfeti
+            fireConfetti();
+        });
+
+    </script>
+</body>
+</html>
