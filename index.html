@@ -569,15 +569,17 @@
         const runState6 = () => {
             // Tanda tangan masuk
             gsap.to('#signature', { opacity: 1, y: 0, duration: 1, delay: 0.5, ease: "back.out(1.5)" });
-            
-            // Aktifkan hujan hati
-            for(let i=0; i<40; i++) hearts.push(new HeartParticle());
-            renderHearts = true;
-            animateHearts();
         };
 
-        // Tombol Peluk Virtual -> Membesarkan hati
+        // Tombol Peluk Virtual -> Membesarkan hati & Mengaktifkan Hujan Hati
         document.getElementById('btn-hug').addEventListener('click', () => {
+            // Mengaktifkan hujan hati jika belum aktif
+            if (!renderHearts) {
+                for(let i=0; i<40; i++) hearts.push(new HeartParticle());
+                renderHearts = true;
+                animateHearts();
+            }
+
             // Animasi membesar sejenak (denyut jantung)
             gsap.to(window, {
                 scaleMultiplier: 2.5,
